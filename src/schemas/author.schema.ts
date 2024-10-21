@@ -3,7 +3,8 @@
 // Birth Date
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Book } from './book.schema';
 
 @Schema()
 export class Author {
@@ -15,6 +16,9 @@ export class Author {
 
   @Prop({ required: false })
   birthDate?: string;
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }] })
+  books: Book[];
 }
 
 export type AuthorDocument = HydratedDocument<Author>;

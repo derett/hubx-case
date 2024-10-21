@@ -1,30 +1,30 @@
 # Hubx Backend Developer Case
 
-- NodeJS
-- MongoDB
-- Docker
-- Error Handlnig
-- Comments & Documentation
-- Following clean architecture principles
+- [x] NodeJS
+- [x] MongoDB
+- [ ] Docker
+- [ ] Error Handlnig
+- [ ] Comments & Documentation
+- [ ] Following clean architecture principles
 
-- Creating a book
-- Getting all books
-- Deleting a book
-- Updating a book
-- Unit tests for endpoint (TDD)
+- [x] Creating a book
+- [x] Getting all books
+- [x] Deleting a book
+- [x] Updating a book
+- [ ] Unit tests for endpoint (TDD)
 
 Book:
 
-- Title
-- Author
-- Price
-- ISBN
-- Languagew
-- Number of Pages
-- Publisher
+- [x] Title
+- [x] Author
+- [x] Price
+- [x] ISBN
+- [x] Language
+- [x] Number of Pages
+- [x] Publisher
 
 Author:
 
-- Name
-- Country
-- Birth Date
+- [x] Name
+- [x] Country
+- [x] Birth Date
