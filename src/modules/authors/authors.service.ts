@@ -11,8 +11,7 @@ export class AuthorsService {
   constructor(@InjectModel(Author.name) private authorModel: Model<Author>) {}
 
   async createAuthor(body: AuthorCreateDto): Promise<Author> {
-    const createdAuthor = new this.authorModel(body);
-    const author = await createdAuthor.save();
+    const author = await this.authorModel.create(body);
     return author;
   }
 

@@ -19,12 +19,14 @@ export class BooksService {
     if (!author)
       throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Author', authorId);
 
-    const createdBook = new this.bookModel({ ...bookDto, author: author._id });
-    const book = await createdBook.save();
+    const book = await this.bookModel.create({
+      ...bookDto,
+      author: author._id,
+    });
 
     await author.updateOne({
       $push: {
-        books: createdBook._id,
+        books: book._id,
       },
     });
     return book;
