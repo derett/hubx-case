@@ -8,11 +8,13 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { MongoIdGuard } from 'src/shared/guards/mongo.id.guard';
 import { AuthorsService } from './authors.service';
 import { AuthorCreateDto } from './dtos/author.create.dto';
 import { AuthorUpdateDto } from './dtos/author.update.dto';
 
+@ApiTags('authors')
 @Controller('authors')
 export class AuthorsController {
   constructor(private readonly authorsService: AuthorsService) {}

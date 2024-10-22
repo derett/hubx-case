@@ -7,10 +7,12 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { BookCreateDto } from './dtos/book.create.dto';
 import { BookUpdateDto } from './dtos/book.update.dto';
 
+@ApiTags('books')
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
