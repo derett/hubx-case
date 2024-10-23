@@ -36,7 +36,7 @@ export class BooksService {
     let book;
 
     try {
-      book = await this.bookModel.findOne({ _id: id }).exec();
+      book = await this.bookModel.findOne({ _id: id });
       if (!book) {
         throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Book', id);
       }
@@ -53,7 +53,20 @@ export class BooksService {
   }
 
   async updateBook(id: string, body: BookUpdateDto): Promise<Book> {
-    await this.bookModel.updateOne({ _id: id }, body);
+    if (body.authorId) {
+      const author = await this.authorModel.findById(body.authorId);
+      if (!author)
+        throw new ServerError(
+          ServerErrorType.WAS_NOT_FOUND,
+          'Author',
+          body.authorId,
+        );
+    }
+
+    await this.bookModel.updateOne(
+      { _id: id },
+      { ...body, author: body.authorId },
+    );
     const updatedBook = this.bookModel.findById(id);
     return updatedBook;
   }

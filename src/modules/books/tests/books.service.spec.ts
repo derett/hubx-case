@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import authorsTestData from 'src/modules/authors/tests/authors.test.data';
 import { Author } from 'src/schemas/author.schema';
 import { Book } from 'src/schemas/book.schema';
+import { ServerError, ServerErrorType } from 'src/shared/helpers/errors.helper';
 import { BooksService } from '../books.service';
 import { BookCreateDto } from '../dtos/book.create.dto';
 import { BookUpdateDto } from '../dtos/book.update.dto';
@@ -22,28 +23,27 @@ describe('BooksService', () => {
       };
     }),
     findById: jest.fn().mockImplementation((id: string) => {
-      return {
-        ...booksTestData.pickOneById(id),
-      };
+      return booksTestData.pickOneById(id);
     }),
     find: jest.fn().mockResolvedValue(booksTestData.getBooks()),
     findOne: jest.fn().mockImplementation((props: { _id: string }) => {
-      return {
-        ...booksTestData.pickOneById(props._id),
-        exec: jest
-          .fn()
-          .mockResolvedValue({ ...booksTestData.pickOneById(props._id) }),
-      };
+      return booksTestData.pickOneById(props._id);
     }),
     updateOne: jest.fn(),
     deleteOne: jest.fn().mockImplementation(() => Promise.resolve(undefined)),
   };
   const mockAuthorModel = {
     findById: jest.fn().mockImplementation((id: string) => {
-      return {
-        ...authorsTestData.pickOneById(id),
-        updateOne: jest.fn(),
-      };
+      const exists = authorsTestData.pickOneById(id);
+
+      if (exists) {
+        return {
+          ...authorsTestData.pickOneById(id),
+          updateOne: jest.fn(),
+        };
+      }
+
+      return exists;
     }),
   };
 
@@ -112,5 +112,39 @@ describe('BooksService', () => {
   it('should delete book', async () => {
     const item = booksTestData.pickOne();
     expect(await service.deleteBook(item._id)).toBeUndefined();
+  });
+
+  it('should throw error when author info is wrong', async () => {
+    let thrownError;
+    const book = booksTestData.randomBookData();
+    const newId = new mongoose.Types.ObjectId().toString();
+
+    try {
+      await service.createBook({
+        ...book,
+        authorId: newId,
+      });
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toEqual(
+      new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Author', newId),
+    );
+  });
+
+  it('should throw error when requested book was not found', async () => {
+    let thrownError;
+    const newId = new mongoose.Types.ObjectId().toString();
+
+    try {
+      await service.findBook(newId);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toEqual(
+      new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Book', newId),
+    );
   });
 });

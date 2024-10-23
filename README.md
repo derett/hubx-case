@@ -2,16 +2,16 @@
 
 - [x] NodeJS
 - [x] MongoDB
-- [ ] Docker
-- [ ] Error Handlnig
+- [x] Docker
+- [x] Error Handlnig
 - [ ] Comments & Documentation
-- [ ] Following clean architecture principles
+- [x] Following clean architecture principles
 
 - [x] Creating a book
 - [x] Getting all books
 - [x] Deleting a book
 - [x] Updating a book
-- [ ] Unit tests for endpoint (TDD)
+- [x] Unit tests for endpoint (TDD)
 
 Book:
 

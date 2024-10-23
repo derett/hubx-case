@@ -5,7 +5,7 @@ import { AuthorsController } from './authors.controller';
 import { AuthorsService } from './authors.service';
 
 @Module({
-  imports: [MongooseModule.forFeature([schemas.Author])],
+  imports: [MongooseModule.forFeature([schemas.Author, schemas.Book])],
   controllers: [AuthorsController],
   providers: [AuthorsService],
 })

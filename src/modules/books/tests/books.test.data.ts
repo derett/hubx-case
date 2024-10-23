@@ -1,13 +1,18 @@
 import { faker } from '@faker-js/faker';
+import { UniqueEnforcer } from 'enforce-unique';
 import mongoose from 'mongoose';
 import authorsTestData from 'src/modules/authors/tests/authors.test.data';
 import { TMongoObject } from 'src/shared/types/mixed';
 import { BookCreateDto } from '../dtos/book.create.dto';
 
+const uniqueEnforcer = new UniqueEnforcer();
+
 // Function to generate random book data
 function randomBookData(): BookCreateDto {
   return {
-    title: faker.music.songName(),
+    title: uniqueEnforcer.enforce(() => {
+      return faker.music.songName();
+    }),
     numberOfPages: Math.round(Math.random() * 100 + 10),
     ISBN: faker.commerce.isbn(),
     price: Number(faker.commerce.price()),

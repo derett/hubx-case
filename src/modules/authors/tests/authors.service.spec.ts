@@ -2,6 +2,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import mongoose from 'mongoose';
 import { Author } from 'src/schemas/author.schema';
+import { ServerError, ServerErrorType } from 'src/shared/helpers/errors.helper';
 import { AuthorsService } from '../authors.service';
 import { AuthorCreateDto } from '../dtos/author.create.dto';
 import { AuthorUpdateDto } from '../dtos/author.update.dto';
@@ -18,10 +19,18 @@ describe('AuthorsService', () => {
       };
     }),
     findById: jest.fn().mockImplementation((id: string) => {
-      return {
-        ...authorsTestData.pickOneById(id),
-        populate: jest.fn().mockReturnValue(authorsTestData.populateBooks(id)),
-      };
+      const exists = authorsTestData.pickOneById(id);
+
+      if (exists) {
+        return {
+          ...exists,
+          populate: jest
+            .fn()
+            .mockReturnValue(authorsTestData.populateBooks(id)),
+        };
+      }
+
+      return exists;
     }),
     find: jest.fn().mockResolvedValue(authorsTestData.getAuthors()),
     findByIdAndUpdate: jest
@@ -111,5 +120,20 @@ describe('AuthorsService', () => {
   it('should delete author', async () => {
     const item = authorsTestData.pickOne();
     expect(await service.deleteAuthor(item._id)).toBeUndefined();
+  });
+
+  it('should throw error when requested author was not found', async () => {
+    let thrownError;
+    const newId = new mongoose.Types.ObjectId().toString();
+
+    try {
+      await service.findAuthor(newId);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toEqual(
+      new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Author', newId),
+    );
   });
 });

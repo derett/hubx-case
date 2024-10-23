@@ -19,7 +19,7 @@ export class AuthorsService {
     let author;
 
     try {
-      author = await this.authorModel.findById(id).populate(['books']);
+      author = await this.authorModel.findById(id)?.populate(['books']);
       if (!author) {
         throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Author', id);
       }

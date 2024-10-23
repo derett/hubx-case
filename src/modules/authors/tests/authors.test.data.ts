@@ -1,13 +1,18 @@
 import { faker } from '@faker-js/faker';
+import { UniqueEnforcer } from 'enforce-unique';
 import mongoose from 'mongoose';
 import booksTestData from 'src/modules/books/tests/books.test.data';
 import { TMongoObject } from 'src/shared/types/mixed';
 import { AuthorCreateDto } from '../dtos/author.create.dto';
 
+const uniqueEnforcer = new UniqueEnforcer();
+
 // Function to generate random author data
 function randomAuthorData(): AuthorCreateDto {
   return {
-    name: faker.person.fullName(),
+    name: uniqueEnforcer.enforce(() => {
+      return faker.person.fullName();
+    }),
     birthDate: faker.date.anytime().toDateString(),
     country: faker.location.country(),
   };
