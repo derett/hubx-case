@@ -1,0 +1,261 @@
+{
+	"info": {
+		"_postman_id": "38554fc9-0d19-4448-a16f-fe4ecc84a874",
+		"name": "Hubx Case",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6349674"
+	},
+	"item": [
+		{
+			"name": "Authors",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{address}}/authors",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{address}}/authors/67164b6aa3d8212ce7d1fa6e",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"authors",
+								"67164b6aa3d8212ce7d1fa6e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Kaan\",\r\n    \"country\": \"TR\",\r\n    \"birthDate\": \"1996\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{address}}/authors",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Kaann\",\r\n    \"country\": \"TR\",\r\n    \"birthDate\": \"1996\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{address}}/authors/67164979c12e55523ca27686",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"authors",
+								"67164979c12e55523ca27686"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{address}}/authors/67164979c12e55523ca27681",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"authors",
+								"67164979c12e55523ca27681"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{address}}/books",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{address}}/books/671659397b8787e45667125c",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"books",
+								"671659397b8787e45667125c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Titans\",\r\n    \"price\": 1,\r\n    \"ISBN\": \"1\",\r\n    \"numberOfPages\": 12,\r\n    \"authorId\": \"6718c65c0d93f7257c730476\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{address}}/books",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Titansa\",\r\n    \"price\": 1,\r\n    \"ISBN\": \"1\",\r\n    \"numberOfPages\": 12\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{address}}/books/671659397b8787e45667125c",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"books",
+								"671659397b8787e45667125c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{address}}/books/671659e9261967030bb0cf54",
+							"host": [
+								"{{address}}"
+							],
+							"path": [
+								"books",
+								"671659e9261967030bb0cf54"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "address",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	]
+}

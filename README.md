@@ -1,30 +1,59 @@
 # Hubx Backend Developer Case
 
-- [x] NodeJS
-- [x] MongoDB
-- [x] Docker
-- [x] Error Handlnig
-- [ ] Comments & Documentation
-- [x] Following clean architecture principles
+[About Assignment](AboutAssignment.md)
 
-- [x] Creating a book
-- [x] Getting all books
-- [x] Deleting a book
-- [x] Updating a book
-- [x] Unit tests for endpoint (TDD)
+## Installation
 
-Book:
+```bash
+npm install
+```
 
-- [x] Title
-- [x] Author
-- [x] Price
-- [x] ISBN
-- [x] Language
-- [x] Number of Pages
-- [x] Publisher
+## Configuration
 
-Author:
+Two configuration files are available as `.env` for running on local setups and `.docker.env` file to be used for Docker setup.
 
-- [x] Name
-- [x] Country
-- [x] Birth Date
+Because there is no secret information yet I didn't include these files into `.gitignore`
+
+## Running the Application
+
+### Local Environment
+
+```bash
+npm run start
+```
+
+### Docker
+
+If not build yet
+
+```bash
+npm run build
+```
+
+```bash
+docker compose up
+```
+
+## Tests
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage unit tests
+$ npm run test:cov
+
+# test coverage e2e tests
+$ npm run test:e2e:cov
+```
+
+## Swagger Documentation
+
+Swagger Documentation is available. You can access it after application initialized from `/doc` endpoint.
+
+## Postman Collection
+
+A testable Postman collection is available. [Collection](HubxCase.postman_collection.json)
