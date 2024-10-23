@@ -1,8 +1,13 @@
 import { HttpStatus } from '@nestjs/common';
 
+enum MongoErrors {
+  DUPLICATE_VALUES = 11000,
+}
+
 enum ServerErrorType {
   WAS_NOT_FOUND,
   INVALID_MONGO_ID,
+  DUPLICATE_VALUES,
 }
 
 class ServerError extends Error {
@@ -10,7 +15,7 @@ class ServerError extends Error {
   readonly message: string;
   readonly statusCode: number = 400;
 
-  constructor(type: ServerErrorType, ...args: string[]) {
+  constructor(type: ServerErrorType, ...args: any[]) {
     super();
 
     this.name = ServerErrorType[type];
@@ -34,10 +39,24 @@ class ServerError extends Error {
         this.statusCode = HttpStatus.BAD_REQUEST;
         break;
 
+      /**
+       * args[0]: key value pair of duplicate keys
+       */
+      case ServerErrorType.DUPLICATE_VALUES:
+        const list = [];
+        if (typeof args[0] === 'object') {
+          Object.entries(args[0]).forEach(([key, value]) => {
+            list.push(`${key}: ${value}`);
+          });
+        }
+        this.message = `Following value(s) are already exists. ${list.join(', ')}`;
+        this.statusCode = HttpStatus.BAD_REQUEST;
+        break;
+
       default:
         break;
     }
   }
 }
 
-export { ServerError, ServerErrorType };
+export { MongoErrors, ServerError, ServerErrorType };

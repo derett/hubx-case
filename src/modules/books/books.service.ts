@@ -3,7 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Author } from 'src/schemas/author.schema';
 import { Book } from 'src/schemas/book.schema';
-import { ServerError, ServerErrorType } from 'src/shared/helpers/errors.helper';
+import {
+  MongoErrors,
+  ServerError,
+  ServerErrorType,
+} from 'src/shared/helpers/errors.helper';
+import { isMongoServerError } from 'src/shared/types/mixed';
 import { BookCreateDto } from './dtos/book.create.dto';
 import { BookUpdateDto } from './dtos/book.update.dto';
 
@@ -19,17 +24,36 @@ export class BooksService {
     if (!author)
       throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Author', authorId);
 
-    const book = await this.bookModel.create({
-      ...bookDto,
-      author: author._id,
-    });
+    try {
+      const book = await this.bookModel.create({
+        ...bookDto,
+        author: author._id,
+      });
 
-    await author.updateOne({
-      $push: {
-        books: book._id,
-      },
-    });
-    return book;
+      await author.updateOne({
+        $push: {
+          books: book._id,
+        },
+      });
+      return book;
+    } catch (e) {
+      if (isMongoServerError(e)) {
+        switch (e.code) {
+          case MongoErrors.DUPLICATE_VALUES:
+            if (typeof e.keyValue === 'object') {
+              throw new ServerError(
+                ServerErrorType.DUPLICATE_VALUES,
+                e.keyValue,
+              );
+            }
+            break;
+
+          default:
+            break;
+        }
+      }
+      throw e;
+    }
   }
 
   async findBook(id: string): Promise<Book> {
@@ -63,12 +87,31 @@ export class BooksService {
         );
     }
 
-    await this.bookModel.updateOne(
-      { _id: id },
-      { ...body, author: body.authorId },
-    );
-    const updatedBook = this.bookModel.findById(id);
-    return updatedBook;
+    try {
+      await this.bookModel.updateOne(
+        { _id: id },
+        { ...body, author: body.authorId },
+      );
+      const updatedBook = this.bookModel.findById(id);
+      return updatedBook;
+    } catch (e) {
+      if (isMongoServerError(e)) {
+        switch (e.code) {
+          case MongoErrors.DUPLICATE_VALUES:
+            if (typeof e.keyValue === 'object') {
+              throw new ServerError(
+                ServerErrorType.DUPLICATE_VALUES,
+                e.keyValue,
+              );
+            }
+            break;
+
+          default:
+            break;
+        }
+      }
+      throw e;
+    }
   }
 
   async deleteBook(id: string): Promise<void> {

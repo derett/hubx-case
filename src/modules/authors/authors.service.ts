@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Author } from 'src/schemas/author.schema';
-import { ServerError, ServerErrorType } from 'src/shared/helpers/errors.helper';
+import {
+  MongoErrors,
+  ServerError,
+  ServerErrorType,
+} from 'src/shared/helpers/errors.helper';
+import { isMongoServerError } from 'src/shared/types/mixed';
 import { AuthorCreateDto } from './dtos/author.create.dto';
 import { AuthorUpdateDto } from './dtos/author.update.dto';
 
@@ -11,8 +16,27 @@ export class AuthorsService {
   constructor(@InjectModel(Author.name) private authorModel: Model<Author>) {}
 
   async createAuthor(body: AuthorCreateDto): Promise<Author> {
-    const author = await this.authorModel.create(body);
-    return author;
+    try {
+      const author = await this.authorModel.create(body);
+      return author;
+    } catch (e) {
+      if (isMongoServerError(e)) {
+        switch (e.code) {
+          case MongoErrors.DUPLICATE_VALUES:
+            if (typeof e.keyValue === 'object') {
+              throw new ServerError(
+                ServerErrorType.DUPLICATE_VALUES,
+                e.keyValue,
+              );
+            }
+            break;
+
+          default:
+            break;
+        }
+      }
+      throw e;
+    }
   }
 
   async findAuthor(id: string): Promise<Author> {
@@ -36,7 +60,26 @@ export class AuthorsService {
   }
 
   async updateAuthor(id: string, body: AuthorUpdateDto): Promise<Author> {
-    return this.authorModel.findByIdAndUpdate(id, body, { new: true });
+    try {
+      return this.authorModel.findByIdAndUpdate(id, body, { new: true });
+    } catch (e) {
+      if (isMongoServerError(e)) {
+        switch (e.code) {
+          case MongoErrors.DUPLICATE_VALUES:
+            if (typeof e.keyValue === 'object') {
+              throw new ServerError(
+                ServerErrorType.DUPLICATE_VALUES,
+                e.keyValue,
+              );
+            }
+            break;
+
+          default:
+            break;
+        }
+      }
+      throw e;
+    }
   }
 
   async deleteAuthor(id: string): Promise<void> {

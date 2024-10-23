@@ -111,6 +111,14 @@ describe('AuthorsController (e2e)', () => {
       });
   });
 
+  it('/books/ (POST) Duplicate Key Violation', async () => {
+    const newBook = booksTestData.pickOne();
+    await request(app.getHttpServer())
+      .post('/books')
+      .send(newBook)
+      .expect(HttpStatus.BAD_REQUEST);
+  });
+
   it('/books/ (POST) Faulty', async () => {
     const newBook = booksTestData.randomBookData();
     const faultyId = new mongoose.Types.ObjectId().toString();
