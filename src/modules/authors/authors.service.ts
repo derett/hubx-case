@@ -13,6 +13,7 @@ export class AuthorsService {
 
   async createAuthor(body: AuthorCreateDto): Promise<Author> {
     try {
+      // Create an author
       const author = await this.authorModel.create(body);
       return author;
     } catch (e) {
@@ -25,6 +26,7 @@ export class AuthorsService {
     let author;
 
     try {
+      // try to find the author by id and populate books, throw not found error if it fails
       author = await this.authorModel.findById(id)?.populate(['books']);
       if (!author) {
         throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Author', id);
@@ -37,13 +39,23 @@ export class AuthorsService {
   }
 
   async listAuthors(): Promise<Author[]> {
+    // List all the authors
     const authors = await this.authorModel.find();
     return authors;
   }
 
   async updateAuthor(id: string, body: AuthorUpdateDto): Promise<Author> {
     try {
-      return this.authorModel.findByIdAndUpdate(id, body, { new: true });
+      // Try to update authors, if returning model is null throw error
+      const model = await this.authorModel.findByIdAndUpdate(id, body, {
+        new: true,
+      });
+
+      if (!model) {
+        throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Author', id);
+      }
+
+      return model;
     } catch (e) {
       mongoErrorHandler(e);
       throw e;

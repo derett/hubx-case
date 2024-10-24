@@ -23,13 +23,39 @@ describe('BooksService', () => {
       };
     }),
     findById: jest.fn().mockImplementation((id: string) => {
+      const exists = booksTestData.pickOneById(id);
+
+      if (exists) {
+        return {
+          ...exists,
+          populate: jest.fn().mockReturnValue(booksTestData.populateAuthor(id)),
+        };
+      }
       return booksTestData.pickOneById(id);
     }),
     find: jest.fn().mockResolvedValue(booksTestData.getBooks()),
     findOne: jest.fn().mockImplementation((props: { _id: string }) => {
       return booksTestData.pickOneById(props._id);
     }),
-    updateOne: jest.fn(),
+    findByIdAndUpdate: jest
+      .fn()
+      .mockImplementation((id: string, dto: BookUpdateDto) => {
+        const exists = booksTestData.pickOneById(id);
+
+        if (exists) {
+          const { authorId, ...rest } = exists;
+          const { authorId: updatedAuthorId, ...updatedRest } = dto;
+
+          return {
+            ...rest,
+            ...updatedRest,
+            author: updatedAuthorId || authorId,
+          };
+        }
+
+        return;
+      }),
+
     deleteOne: jest.fn().mockImplementation(() => Promise.resolve(undefined)),
   };
   const mockAuthorModel = {
@@ -104,9 +130,37 @@ describe('BooksService', () => {
 
     const book = booksTestData.pickOne();
 
-    expect(await service.updateBook(book._id, update)).toEqual(
-      expect.objectContaining(book),
-    );
+    const { authorId, ...rest } = book;
+    const { authorId: updatedAuthorId, ...updateRest } = update;
+    const expecting = {
+      ...rest,
+      ...updateRest,
+      author: updatedAuthorId || authorId,
+    };
+    const result = await service.updateBook(book._id, update);
+
+    expect(expecting).toEqual(result);
+  });
+
+  it('should update book author should not change', async () => {
+    const update: BookUpdateDto = {
+      ...booksTestData.randomBookData(),
+      title: 'Abc',
+    };
+
+    const book = booksTestData.pickOne();
+
+    const { authorId, ...rest } = book;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { authorId: updatedAuthorId, ...updateRest } = update;
+    const expecting = {
+      ...rest,
+      ...updateRest,
+      author: authorId,
+    };
+    const result = await service.updateBook(book._id, updateRest);
+
+    expect(expecting).toEqual(result);
   });
 
   it('should delete book', async () => {

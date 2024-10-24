@@ -16,21 +16,25 @@ export class BooksService {
   ) {}
 
   async createBook({ authorId, ...bookDto }: BookCreateDto): Promise<Book> {
+    // Tries to find an author entity by given Id, throws error if it fails to find
     const author = await this.authorModel.findById(authorId);
     if (!author)
       throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Author', authorId);
 
     try {
+      // Create a book with Author reference
       const book = await this.bookModel.create({
         ...bookDto,
         author: author._id,
       });
 
+      // Push newly created book to authors array
       await author.updateOne({
         $push: {
           books: book._id,
         },
       });
+
       return book;
     } catch (e) {
       mongoErrorHandler(e);
@@ -42,7 +46,8 @@ export class BooksService {
     let book;
 
     try {
-      book = await this.bookModel.findOne({ _id: id });
+      // try to find the book by id and populate author, throw not found error if it fails
+      book = await this.bookModel.findById(id)?.populate(['author']);
       if (!book) {
         throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Book', id);
       }
@@ -54,11 +59,13 @@ export class BooksService {
   }
 
   async listBooks(): Promise<Book[]> {
+    // List all the books
     const books = await this.bookModel.find();
     return books;
   }
 
   async updateBook(id: string, body: BookUpdateDto): Promise<Book> {
+    // If an authorId is provided (assuming that we allow author of the book can be changed) check if the author exists
     if (body.authorId) {
       const author = await this.authorModel.findById(body.authorId);
       if (!author)
@@ -70,12 +77,20 @@ export class BooksService {
     }
 
     try {
-      await this.bookModel.updateOne(
-        { _id: id },
-        { ...body, author: body.authorId },
-      );
-      const updatedBook = this.bookModel.findById(id);
-      return updatedBook;
+      const updateBody = { ...body };
+      // Populate author property if the authorId is provided and valid
+      if (body.authorId) updateBody['author'] = body.authorId;
+
+      // Try to update book, if returning model is null throw error
+      const model = await this.bookModel.findByIdAndUpdate(id, updateBody, {
+        new: true,
+      });
+
+      if (!model) {
+        throw new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Book', id);
+      }
+
+      return model;
     } catch (e) {
       mongoErrorHandler(e);
       throw e;

@@ -156,6 +156,23 @@ describe('AuthorsController (e2e)', () => {
     const pickOne = booksTestData.pickOne();
     const newData = booksTestData.randomBookData();
     const faultyId = new mongoose.Types.ObjectId().toString();
+    const merged = { ...pickOne, ...newData };
+    await request(app.getHttpServer())
+      .put(`/books/${faultyId}`)
+      .send(merged)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect(({ body }) => {
+        expect(body.message).toEqual(
+          new ServerError(ServerErrorType.WAS_NOT_FOUND, 'Book', faultyId)
+            .message,
+        );
+      });
+  });
+
+  it('/books/:id (PUT) Faulty', async () => {
+    const pickOne = booksTestData.pickOne();
+    const newData = booksTestData.randomBookData();
+    const faultyId = new mongoose.Types.ObjectId().toString();
     const merged = { ...pickOne, ...newData, authorId: faultyId };
     await request(app.getHttpServer())
       .put(`/books/${pickOne._id}`)

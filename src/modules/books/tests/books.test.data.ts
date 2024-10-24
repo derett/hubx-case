@@ -42,6 +42,23 @@ function getBooks() {
   return books;
 }
 
+function populateAuthor(bookId: string) {
+  const book = getBooks().find((o) => o._id === bookId);
+
+  if (book) {
+    const author = authorsTestData
+      .getAuthors()
+      .find((o) => o._id === book.authorId);
+
+    if (author) {
+      return {
+        ...book,
+        author,
+      };
+    }
+  }
+}
+
 export default {
   randomBookData,
   createRandomBook,
@@ -55,5 +72,10 @@ export default {
     const allBooks = getBooks();
     return allBooks.find((book) => book._id === _id);
   },
+
+  // Return the full list of books
   getBooks,
+
+  // Return Book wtih Author populated
+  populateAuthor,
 };
