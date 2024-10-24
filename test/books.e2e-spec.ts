@@ -39,7 +39,9 @@ describe('AuthorsController (e2e)', () => {
       ),
     );
 
-    app = moduleFixture.createNestApplication<NestExpressApplication>();
+    app = moduleFixture.createNestApplication<NestExpressApplication>({
+      logger: false, // Set as false to suppress already expected errors. In case of debugging this can be changed to true
+    });
     await app.init();
   });
 

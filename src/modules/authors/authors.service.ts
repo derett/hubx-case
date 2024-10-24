@@ -2,12 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Author } from 'src/schemas/author.schema';
-import {
-  MongoErrors,
-  ServerError,
-  ServerErrorType,
-} from 'src/shared/helpers/errors.helper';
-import { isMongoServerError } from 'src/shared/types/mixed';
+import { ServerError, ServerErrorType } from 'src/shared/helpers/errors.helper';
+import mongoErrorHandler from 'src/shared/helpers/mongo.error.handler';
 import { AuthorCreateDto } from './dtos/author.create.dto';
 import { AuthorUpdateDto } from './dtos/author.update.dto';
 
@@ -20,21 +16,7 @@ export class AuthorsService {
       const author = await this.authorModel.create(body);
       return author;
     } catch (e) {
-      if (isMongoServerError(e)) {
-        switch (e.code) {
-          case MongoErrors.DUPLICATE_VALUES:
-            if (typeof e.keyValue === 'object') {
-              throw new ServerError(
-                ServerErrorType.DUPLICATE_VALUES,
-                e.keyValue,
-              );
-            }
-            break;
-
-          default:
-            break;
-        }
-      }
+      mongoErrorHandler(e);
       throw e;
     }
   }
@@ -63,21 +45,7 @@ export class AuthorsService {
     try {
       return this.authorModel.findByIdAndUpdate(id, body, { new: true });
     } catch (e) {
-      if (isMongoServerError(e)) {
-        switch (e.code) {
-          case MongoErrors.DUPLICATE_VALUES:
-            if (typeof e.keyValue === 'object') {
-              throw new ServerError(
-                ServerErrorType.DUPLICATE_VALUES,
-                e.keyValue,
-              );
-            }
-            break;
-
-          default:
-            break;
-        }
-      }
+      mongoErrorHandler(e);
       throw e;
     }
   }

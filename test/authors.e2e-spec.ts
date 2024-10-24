@@ -30,7 +30,9 @@ describe('AuthorsController (e2e)', () => {
 
     await Promise.all(authors.map((author) => authorsModel.create(author)));
 
-    app = moduleFixture.createNestApplication<NestExpressApplication>();
+    app = moduleFixture.createNestApplication<NestExpressApplication>({
+      logger: false, // Set as false to suppress already expected errors. In case of debugging this can be changed to true
+    });
     await app.init();
   });
 
